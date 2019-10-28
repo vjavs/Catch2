@@ -86,11 +86,13 @@ namespace Catch {
     }
 
     void RunContext::testGroupStarting(std::string const& testSpec, std::size_t groupIndex, std::size_t groupsCount) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_reporter->testGroupStarting(GroupInfo(testSpec, groupIndex, groupsCount));
     }
 
     void RunContext::testGroupEnded(std::string const& testSpec, Totals const& totals, std::size_t groupIndex, std::size_t groupsCount) {
-        m_reporter->testGroupEnded(TestGroupStats(GroupInfo(testSpec, groupIndex, groupsCount), totals, aborting()));
+	std::lock_guard<std::mutex> lk(m_mutex);
+	m_reporter->testGroupEnded(TestGroupStats(GroupInfo(testSpec, groupIndex, groupsCount), totals, aborting()));
     }
 
     Totals RunContext::runTest(TestCase const& testCase) {
@@ -135,11 +137,13 @@ namespace Catch {
     }
 
     IConfigPtr RunContext::config() const {
+	std::lock_guard<std::mutex> lk(m_mutex);
         return m_config;
     }
 
     IStreamingReporter& RunContext::reporter() const {
-        return *m_reporter;
+        std::lock_guard<std::mutex> lk(m_mutex);
+	return *m_reporter;
     }
 
     void RunContext::assertionEnded(AssertionResult const & result) {
@@ -174,7 +178,8 @@ namespace Catch {
     }
 
     bool RunContext::sectionStarted(SectionInfo const & sectionInfo, Counts & assertions) {
-        ITracker& sectionTracker = SectionTracker::acquire(m_trackerContext, TestCaseTracking::NameAndLocation(sectionInfo.name, sectionInfo.lineInfo));
+        std::lock_guard<std::mutex> lk(m_mutex);
+	ITracker& sectionTracker = SectionTracker::acquire(m_trackerContext, TestCaseTracking::NameAndLocation(sectionInfo.name, sectionInfo.lineInfo));
         if (!sectionTracker.isOpen())
             return false;
         m_activeSections.push_back(&sectionTracker);
@@ -188,7 +193,8 @@ namespace Catch {
         return true;
     }
     auto RunContext::acquireGeneratorTracker( SourceLineInfo const& lineInfo ) -> IGeneratorTracker& {
-        using namespace Generators;
+        std::lock_guard<std::mutex> lk(m_mutex);
+	using namespace Generators;
         GeneratorTracker& tracker = GeneratorTracker::acquire( m_trackerContext, TestCaseTracking::NameAndLocation( "generator", lineInfo ) );
         assert( tracker.isOpen() );
         m_lastAssertionInfo.lineInfo = lineInfo;
@@ -208,6 +214,7 @@ namespace Catch {
     }
 
     void RunContext::sectionEnded(SectionEndInfo const & endInfo) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         Counts assertions = m_totals.assertions - endInfo.prevAssertions;
         bool missingAssertions = testForMissingAssertions(assertions);
 
@@ -222,6 +229,7 @@ namespace Catch {
     }
 
     void RunContext::sectionEndedEarly(SectionEndInfo const & endInfo) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         if (m_unfinishedSections.empty())
             m_activeSections.back()->fail();
         else
@@ -233,28 +241,35 @@ namespace Catch {
 
 #if defined(CATCH_CONFIG_ENABLE_BENCHMARKING)
     void RunContext::benchmarkPreparing(std::string const& name) {
-		m_reporter->benchmarkPreparing(name);
-	}
+	std::lock_guard<std::mutex> lk(m_mutex);
+	m_reporter->benchmarkPreparing(name);
+    }
     void RunContext::benchmarkStarting( BenchmarkInfo const& info ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_reporter->benchmarkStarting( info );
     }
     void RunContext::benchmarkEnded( BenchmarkStats<> const& stats ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_reporter->benchmarkEnded( stats );
     }
-	void RunContext::benchmarkFailed(std::string const & error) {
-		m_reporter->benchmarkFailed(error);
-	}
+    void RunContext::benchmarkFailed(std::string const & error) {
+	std::lock_guard<std::mutex> lk(m_mutex);
+	m_reporter->benchmarkFailed(error);
+    }
 #endif // CATCH_CONFIG_ENABLE_BENCHMARKING
 
     void RunContext::pushScopedMessage(MessageInfo const & message) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_messages.push_back(message);
     }
 
     void RunContext::popScopedMessage(MessageInfo const & message) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_messages.erase(std::remove(m_messages.begin(), m_messages.end(), message), m_messages.end());
     }
 
     void RunContext::emplaceUnscopedMessage( MessageBuilder const& builder ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_messageScopes.emplace_back( builder );
     }
 
@@ -398,6 +413,7 @@ namespace Catch {
         ITransientExpression const& expr,
         AssertionReaction& reaction
     ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_reporter->assertionStarting( info );
 
         bool negated = isFalseTest( info.resultDisposition );
@@ -437,6 +453,7 @@ namespace Catch {
             StringRef const& message,
             AssertionReaction& reaction
     ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_reporter->assertionStarting( info );
 
         m_lastAssertionInfo = info;
@@ -460,6 +477,7 @@ namespace Catch {
             std::string const& message,
             AssertionReaction& reaction
     ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_lastAssertionInfo = info;
 
         AssertionResultData data( ResultWas::ThrewException, LazyExpression( false ) );
@@ -477,6 +495,7 @@ namespace Catch {
     void RunContext::handleIncomplete(
             AssertionInfo const& info
     ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_lastAssertionInfo = info;
 
         AssertionResultData data( ResultWas::ThrewException, LazyExpression( false ) );
@@ -489,6 +508,7 @@ namespace Catch {
             ResultWas::OfType resultType,
             AssertionReaction &reaction
     ) {
+	std::lock_guard<std::mutex> lk(m_mutex);
         m_lastAssertionInfo = info;
 
         AssertionResultData data( resultType, LazyExpression( false ) );

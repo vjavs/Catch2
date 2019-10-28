@@ -24,6 +24,7 @@
 #include "catch_fatal_condition.h"
 
 #include <string>
+#include <mutex>
 
 namespace Catch {
 
@@ -149,6 +150,7 @@ namespace Catch {
         bool m_lastAssertionPassed = false;
         bool m_shouldReportUnexpected = true;
         bool m_includeSuccessfulResults;
+	mutable std::mutex m_mutex;
     };
 
     void seedRng(IConfig const& config);

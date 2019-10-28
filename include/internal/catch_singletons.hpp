@@ -7,6 +7,10 @@
 #ifndef TWOBLUECUBES_CATCH_SINGLETONS_HPP_INCLUDED
 #define TWOBLUECUBES_CATCH_SINGLETONS_HPP_INCLUDED
 
+#include "catch_compiler_capabilities.h"
+
+#include <mutex>
+
 namespace Catch {
 
     struct ISingleton {
@@ -21,21 +25,26 @@ namespace Catch {
     template<typename SingletonImplT, typename InterfaceT = SingletonImplT, typename MutableInterfaceT = InterfaceT>
     class Singleton : SingletonImplT, public ISingleton {
 
-        static auto getInternal() -> Singleton* {
-            static Singleton* s_instance = nullptr;
-            if( !s_instance ) {
-                s_instance = new Singleton;
-                addSingleton( s_instance );
+        static auto getInternal() -> Singleton& {
+	    CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS
+            static Singleton s_instance;
+	    CATCH_INTERNAL_UNSUPPRESS_GLOBALS_WARNINGS
+	    static bool s_added = false;
+	    static std::mutex s_mutex;
+            if( !s_added ) {
+		std::lock_guard<std::mutex> lk(s_mutex);
+                addSingleton( &s_instance );
+		s_added = true;
             }
             return s_instance;
         }
 
     public:
         static auto get() -> InterfaceT const& {
-            return *getInternal();
+            return getInternal();
         }
         static auto getMutable() -> MutableInterfaceT& {
-            return *getInternal();
+            return getInternal();
         }
     };
 
