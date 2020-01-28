@@ -33,7 +33,7 @@ matrix:
       addons:
           apt:
               sources: *all_sources
-              packages: ['clang-8', 'libstdc++-8-dev']
+              packages: ['clang-8', 'libstdc++-8-dev', 'lcov']
       env: COMPILER='clang++-8' CPP17=1 EXAMPLES=1 COVERAGE=1 EXTRAS=1
 
     - os: linux
@@ -47,7 +47,7 @@ matrix:
     - os: osx
       osx_image: xcode11.2
       compiler: clang
-      env: COMPILER='clang++' CPP14=1 EXAMPLES=1 COVERAGE=1 EXTRAS=1
+      env: COMPILER='clang++' CPP14=1 EXAMPLES=1 EXTRAS=1
 
 
 before_script:
