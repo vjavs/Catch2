@@ -71,13 +71,13 @@ before_script:
 
 script:
   - cd Build-Debug
-  - make -j 2
+  - make -j 2 VERBOSE=1
   - CTEST_OUTPUT_ON_FAILURE=1 ctest -j 2
     # Coverage collection does not work for OS X atm
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${COVERAGE}" == "1" ]]; then
-      make gcov
-      make lcov
+      make gcov VERBOSE=1
+      make lcov VERBOSE=1
       bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
     fi
   - # Go to release build

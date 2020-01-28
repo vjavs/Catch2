@@ -20,6 +20,7 @@ if (CATCH_ENABLE_COVERAGE)
     set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
     find_package(codecov)
     list(APPEND LCOV_REMOVE_PATTERNS "'/usr/*'")
+    message(NOTICE "Coverage enabled")
 endif()
 
 
@@ -70,6 +71,7 @@ endif()
 # This needs to be called after the last coverage target has been added!
 if (CATCH_ENABLE_COVERAGE)
     coverage_evaluate()
+    message(NOTICE "Coverage evaluated")
 endif()
 
 

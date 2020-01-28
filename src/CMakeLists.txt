@@ -229,6 +229,7 @@ add_library(Catch2 STATIC
 
 if (CATCH_ENABLE_COVERAGE)
     add_coverage(Catch2)
+    message(NOTICE "Coverage added to Catch2")
 endif()
 
 add_library(Catch2::Catch2 ALIAS Catch2)
@@ -277,6 +278,7 @@ target_link_libraries(Catch2Main PUBLIC Catch2)
 
 if (CATCH_ENABLE_COVERAGE)
     add_coverage(Catch2Main)
+    message(NOTICE "Catch2Main coverage added")
 endif()
 
 

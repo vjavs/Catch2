@@ -91,6 +91,7 @@ target_link_libraries(SelfTest PRIVATE Catch2)
 
 if (CATCH_ENABLE_COVERAGE)
     add_coverage(SelfTest)
+    message(NOTICE "SelfTest coverage enabled")
 endif()
 
 # Add per compiler options
