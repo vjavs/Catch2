@@ -70,6 +70,15 @@ endif()
 
 # This needs to be called after the last coverage target has been added!
 if (CATCH_ENABLE_COVERAGE)
+    add_coverage(Catch2)
+    message(NOTICE "Coverage added to Catch2")
+
+    add_coverage(Catch2Main)
+    message(NOTICE "Catch2Main coverage added")
+
+    add_coverage(SelfTest)
+    message(NOTICE "SelfTest coverage enabled")
+
     coverage_evaluate()
     message(NOTICE "Coverage evaluated")
 endif()

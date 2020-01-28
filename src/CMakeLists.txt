@@ -227,11 +227,6 @@ add_library(Catch2 STATIC
   ${BENCHMARK_SOURCES}
 )
 
-if (CATCH_ENABLE_COVERAGE)
-    add_coverage(Catch2)
-    message(NOTICE "Coverage added to Catch2")
-endif()
-
 add_library(Catch2::Catch2 ALIAS Catch2)
 
 if (ANDROID)
@@ -275,12 +270,6 @@ add_library(Catch2Main STATIC
 )
 add_library(Catch2::Catch2Main ALIAS Catch2Main)
 target_link_libraries(Catch2Main PUBLIC Catch2)
-
-if (CATCH_ENABLE_COVERAGE)
-    add_coverage(Catch2Main)
-    message(NOTICE "Catch2Main coverage added")
-endif()
-
 
 
 if (NOT_SUBPROJECT)

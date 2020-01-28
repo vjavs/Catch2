@@ -89,10 +89,6 @@ include(CTest)
 add_executable(SelfTest ${TEST_SOURCES})
 target_link_libraries(SelfTest PRIVATE Catch2)
 
-if (CATCH_ENABLE_COVERAGE)
-    add_coverage(SelfTest)
-    message(NOTICE "SelfTest coverage enabled")
-endif()
 
 # Add per compiler options
 if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU" )
