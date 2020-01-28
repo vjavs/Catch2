@@ -226,6 +226,11 @@ add_library(Catch2 STATIC
   ${BENCHMARK_HEADERS}
   ${BENCHMARK_SOURCES}
 )
+
+if (CATCH_ENABLE_COVERAGE)
+    add_coverage(Catch2)
+endif()
+
 add_library(Catch2::Catch2 ALIAS Catch2)
 
 if (ANDROID)
