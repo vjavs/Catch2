@@ -16,12 +16,6 @@ option(CATCH_INSTALL_EXTRAS "Install extras alongside library" ON)
 
 # Provide path for scripts
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
-if (CATCH_ENABLE_COVERAGE)
-    set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
-    find_package(codecov)
-    list(APPEND LCOV_REMOVE_PATTERNS "'/usr/*'")
-    message(NOTICE "Coverage enabled")
-endif()
 
 
 set(CATCH_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Catch2")
@@ -70,17 +64,12 @@ endif()
 
 # This needs to be called after the last coverage target has been added!
 if (CATCH_ENABLE_COVERAGE)
-    add_coverage(Catch2)
-    message(NOTICE "Coverage added to Catch2")
-
-    add_coverage(Catch2Main)
-    message(NOTICE "Catch2Main coverage added")
-
-    add_coverage(SelfTest)
-    message(NOTICE "SelfTest coverage enabled")
-
-    coverage_evaluate()
-    message(NOTICE "Coverage evaluated")
+    include(CodeCoverage)
+    append_coverage_compiler_flags()
+    setup_target_for_coverage_lcov(NAME coverage
+    EXECUTABLE ctest -j 2
+    DEPENDENCIES Catch2 Catch2Main SelfTest
+    )
 endif()
 
 

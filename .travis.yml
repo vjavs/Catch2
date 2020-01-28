@@ -76,8 +76,7 @@ script:
     # Coverage collection does not work for OS X atm
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${COVERAGE}" == "1" ]]; then
-      make gcov VERBOSE=1
-      make lcov VERBOSE=1
+      make coverage
       bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
     fi
   - # Go to release build
