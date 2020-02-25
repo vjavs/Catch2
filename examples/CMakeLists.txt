@@ -50,6 +50,7 @@ set(ALL_EXAMPLE_TARGETS
   ${TARGETS_IDIOMATIC_EXAMPLES}
   010-TestCase
   020-MultiFile
+  231-Cfg_OutputStreams
 )
 
 foreach( name ${ALL_EXAMPLE_TARGETS} )
